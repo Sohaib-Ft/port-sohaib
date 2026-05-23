@@ -1,0 +1,125 @@
+.techstack {
+  background: var(--bg-secondary);
+}
+
+.techstack__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.techstack__category {
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  transition: all var(--transition-base);
+}
+
+.techstack__category:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+.techstack__category-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.techstack__category-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.techstack__category-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.techstack__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.techstack__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-glass);
+  border: 1px solid transparent;
+  transition: all var(--transition-base);
+  cursor: default;
+}
+
+.techstack__item:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-glass-hover);
+  transform: translateY(-2px);
+}
+
+.techstack__item-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.techstack__item-icon img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+[data-theme="dark"] .techstack__item-icon img {
+  filter: brightness(0.95);
+}
+
+.techstack__item-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.techstack__item:hover .techstack__item-name {
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .techstack__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .techstack__items {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+  }
+
+  .techstack__category {
+    padding: 24px;
+  }
+
+  .techstack__item {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .techstack__item-name {
+    white-space: normal;
+    word-break: break-word;
+    font-size: 0.8rem;
+  }
+}
