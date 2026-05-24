@@ -112,11 +112,12 @@ function ProjectCard({ project, index }) {
 export default function AllProjects({ onBack }) {
   const [projects, setProjects] = useState(FALLBACK);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'https://portfolio-backend-sohaib.fly.dev';
+
   useEffect(() => {
     const fetchProjects = async () => {
-      // 1. Try Vite proxy first (local path)
       try {
-        const res = await fetch('/api/projects', { cache: 'no-store' });
+        const res = await fetch(`${API_URL}/api/projects`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {
@@ -127,7 +128,9 @@ export default function AllProjects({ onBack }) {
               title: p.title || 'Untitled',
               fullTitle: p.title || 'Untitled',
               description: p.description || '',
-              image: p.image || '',
+              image: p.image
+                ? (p.image.startsWith('/uploads/') ? `${API_URL}${p.image}` : p.image)
+                : '',
               tags: Array.isArray(p.tags) ? p.tags : [],
               github: p.github || '#',
               color: COLORS[i % COLORS.length],
@@ -137,51 +140,14 @@ export default function AllProjects({ onBack }) {
           }
         }
       } catch (err) {
-        console.error('Proxy fetch failed, trying direct URLs...', err);
+        console.error('Fetch failed:', err);
       }
 
-      // 2. Fallbacks direct URLs
-      const hostname = window.location.hostname || 'localhost';
-      const urls = [
-        `http://${hostname === 'localhost' ? '127.0.0.1' : hostname}:5000/api/projects`,
-        'http://127.0.0.1:5000/api/projects',
-        'http://localhost:5000/api/projects'
-      ];
-      
-      for (const url of urls) {
-        try {
-          const res = await fetch(url, { cache: 'no-store' });
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (Array.isArray(data)) {
-            const baseUrl = url.substring(0, url.indexOf('/api'));
-            const sorted = [...data].sort(
-              (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
-            );
-            const mapped = sorted.map((p, i) => ({
-              title: p.title || 'Untitled',
-              fullTitle: p.title || 'Untitled',
-              description: p.description || '',
-              image: p.image
-                ? (p.image.startsWith('/uploads/') ? `${baseUrl}${p.image}` : p.image)
-                : '',
-              tags: Array.isArray(p.tags) ? p.tags : [],
-              github: p.github || '#',
-              color: COLORS[i % COLORS.length],
-            }));
-            
-            setProjects(mapped);
-            return;
-          }
-        } catch (err) {
-          console.error(`Failed to fetch from ${url}:`, err);
-        }
-      }
+      // If DB empty or fetch fails, just keep the initial fallback state.
     };
 
     fetchProjects();
   }, []);
-
   // Local scroll observer to trigger animations on cards & text in AllProjects view
   useEffect(() => {
     const observer = new IntersectionObserver(

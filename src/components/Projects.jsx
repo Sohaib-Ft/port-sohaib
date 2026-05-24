@@ -113,20 +113,23 @@ export default function Projects({ onViewAll }) {
   const [allProjects, setAllProjects] = useState([]);
   const [apiLoaded, setApiLoaded] = useState(false);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'https://portfolio-backend-sohaib.fly.dev';
+
   useEffect(() => {
-    fetch('/api/projects')
+    fetch(`${API_URL}/api/projects`)
       .then(res => {
         if (!res.ok) throw new Error('API error');
         return res.json();
       })
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          const mapped = data.map((p, i) => ({
+          const sorted = [...data].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+          const mapped = sorted.map((p, i) => ({
             title: p.title || 'Untitled',
             fullTitle: p.title || 'Untitled',
             description: p.description || '',
             image: p.image
-              ? (p.image.startsWith('/uploads/') ? p.image : p.image)
+              ? (p.image.startsWith('/uploads/') ? `${API_URL}${p.image}` : p.image)
               : '',
             tags: Array.isArray(p.tags) ? p.tags : [],
             github: p.github || '#',

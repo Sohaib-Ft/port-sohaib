@@ -63,42 +63,35 @@ export default function TechStack() {
 
   useEffect(() => {
     const fetchSkills = async () => {
-      const hostname = window.location.hostname || 'localhost';
-      const urls = [
-        `http://${hostname === 'localhost' ? '127.0.0.1' : hostname}:5000/api/skills`,
-        'http://127.0.0.1:5000/api/skills',
-        'http://localhost:5000/api/skills'
-      ];
+      const API_URL = import.meta.env.VITE_API_URL || 'https://portfolio-backend-sohaib.fly.dev';
 
-      for (const url of urls) {
-        try {
-          const res = await fetch(url);
-          if (!res.ok) continue;
+      try {
+        const res = await fetch(`${API_URL}/api/skills`);
+        if (res.ok) {
           const skills = await res.json();
-          if (!Array.isArray(skills) || skills.length === 0) continue;
+          if (Array.isArray(skills) && skills.length > 0) {
+            // Group skills by category
+            const grouped = {};
+            skills.forEach(skill => {
+              const cat = skill.category || 'Other';
+              if (!grouped[cat]) grouped[cat] = [];
+              grouped[cat].push({ name: skill.name, icon: skill.icon || null, role: skill.role || null });
+            });
 
-          // Group skills by category
-          const grouped = {};
-          skills.forEach(skill => {
-            const cat = skill.category || 'Other';
-            if (!grouped[cat]) grouped[cat] = [];
-            grouped[cat].push({ name: skill.name, icon: skill.icon || null, role: skill.role || null });
-          });
+            // Convert to array with meta, maintaining predefined order
+            const cats = Object.keys(categoryMeta)
+              .filter(key => grouped[key])
+              .map(key => ({
+                title: categoryMeta[key].title,
+                color: categoryMeta[key].color,
+                techs: grouped[key],
+              }));
 
-          // Convert to array with meta, maintaining predefined order
-          const cats = Object.keys(categoryMeta)
-            .filter(key => grouped[key])
-            .map(key => ({
-              title: categoryMeta[key].title,
-              color: categoryMeta[key].color,
-              techs: grouped[key],
-            }));
-
-          setCategories(cats);
-          return;
-        } catch (err) {
-          console.error(`Failed to fetch skills from ${url}:`, err);
+            setCategories(cats);
+          }
         }
+      } catch (err) {
+        console.error('Failed to fetch skills:', err);
       }
     };
 
