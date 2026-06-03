@@ -18,9 +18,11 @@ export default function Projects() {
     fetchProjects();
   }, []);
 
+  const API_URL = 'https://portfolio-backend-sohaib.fly.dev';
+
   const fetchProjects = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/projects');
+      const res = await axios.get(`${API_URL}/api/projects`);
       setProjects(res.data);
     } catch (error) {
       console.error('Error fetching projects', error);
@@ -59,11 +61,11 @@ export default function Projects() {
 
     try {
       if (currentProject) {
-        await axios.put(`http://localhost:5000/api/projects/${currentProject._id}`, formData, {
+        await axios.put(`${API_URL}/api/projects/${currentProject._id}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else {
-        await axios.post('http://localhost:5000/api/projects', formData, {
+        await axios.post(`${API_URL}/api/projects`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }
@@ -77,7 +79,7 @@ export default function Projects() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this project?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/projects/${id}`);
+        await axios.delete(`${API_URL}/api/projects/${id}`);
         fetchProjects();
       } catch (error) {
         console.error('Error deleting project', error);
@@ -102,7 +104,7 @@ export default function Projects() {
         {projects.map(project => (
           <div key={project._id} className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden flex flex-col">
             <div className="h-48 overflow-hidden bg-gray-800">
-              {project.image && <img src={`http://localhost:5000${project.image}`} alt={project.title} className="w-full h-full object-cover" />}
+              {project.image && <img src={project.image.startsWith('http') ? project.image : `${API_URL}${project.image}`} alt={project.title} className="w-full h-full object-cover" />}
             </div>
             <div className="p-5 flex-1 flex flex-col">
               <h3 className="text-xl font-bold mb-2">{project.title}</h3>

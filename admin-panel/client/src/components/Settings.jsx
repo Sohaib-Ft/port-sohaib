@@ -15,9 +15,11 @@ export default function Settings() {
     fetchProfile();
   }, []);
 
+  const API_URL = 'https://portfolio-backend-sohaib.fly.dev';
+
   const fetchProfile = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/profile');
+      const res = await axios.get(`${API_URL}/api/profile`);
       if (res.data) {
         setProfile(res.data);
       }
@@ -33,7 +35,7 @@ export default function Settings() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put('http://localhost:5000/api/profile', profile);
+      await axios.put(`${API_URL}/api/profile`, profile);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {

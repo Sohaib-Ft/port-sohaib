@@ -8,8 +8,9 @@ export default function Login({ setToken }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    const API_URL = 'https://portfolio-backend-sohaib.fly.dev';
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const res = await axios.post(`${API_URL}/api/auth/login`, { email, password });
       localStorage.setItem('adminToken', res.data.token);
       setToken(res.data.token);
     } catch (err) {

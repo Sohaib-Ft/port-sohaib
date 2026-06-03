@@ -12,11 +12,12 @@ export default function DashboardOverview() {
 
   useEffect(() => {
     const fetchStats = async () => {
+      const API_URL = 'https://portfolio-backend-sohaib.fly.dev';
       try {
         const [projectsRes, skillsRes, messagesRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/projects'),
-          axios.get('http://localhost:5000/api/skills'),
-          axios.get('http://localhost:5000/api/messages')
+          axios.get(`${API_URL}/api/projects`),
+          axios.get(`${API_URL}/api/skills`),
+          axios.get(`${API_URL}/api/messages`)
         ]);
 
         setStats({

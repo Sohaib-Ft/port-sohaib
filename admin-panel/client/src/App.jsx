@@ -2,14 +2,10 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import skillLibrary from './skillLibrary';
 import './index.css';
-const getBackendUrl = (path = '') => {
-  const hostname = window.location.hostname || 'localhost';
-  const base = `http://${hostname === 'localhost' ? '127.0.0.1' : hostname}:5000`;
-  return path ? `${base}${path}` : base;
-};
-
-const API = getBackendUrl('/api');
-const BASE_URL = getBackendUrl();
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_URL = import.meta.env.VITE_API_URL || (isLocal ? 'http://127.0.0.1:5000' : 'https://portfolio-backend-sohaib.fly.dev');
+const API = `${API_URL}/api`;
+const BASE_URL = API_URL;
 
 export default function App() {
   const [theme, setTheme] = useState(localStorage.getItem('adminTheme') || 'dark');
@@ -332,7 +328,11 @@ export default function App() {
             {projects.map(project => (
               <div className="project-card" key={project._id}>
                 {project.image ? (
-                  <img src={`${BASE_URL}${project.image}`} alt={project.title} className="project-card__image" />
+                  <img
+                    src={project.image.startsWith('http') ? project.image : `${BASE_URL}${project.image}`}
+                    alt={project.title}
+                    className="project-card__image"
+                  />
                 ) : (
                   <div className="project-card__image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', color: 'var(--text-muted)' }}>📁</div>
                 )}

@@ -10,9 +10,11 @@ export default function Messages() {
     fetchMessages();
   }, []);
 
+  const API_URL = 'https://portfolio-backend-sohaib.fly.dev';
+
   const fetchMessages = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/messages');
+      const res = await axios.get(`${API_URL}/api/messages`);
       setMessages(res.data);
     } catch (error) {
       console.error('Error fetching messages', error);
@@ -21,7 +23,7 @@ export default function Messages() {
 
   const handleToggleRead = async (id, currentStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/messages/${id}`, { isRead: !currentStatus });
+      await axios.put(`${API_URL}/api/messages/${id}`, { isRead: !currentStatus });
       fetchMessages();
     } catch (error) {
       console.error('Error updating message', error);
@@ -31,7 +33,7 @@ export default function Messages() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this message?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/messages/${id}`);
+        await axios.delete(`${API_URL}/api/messages/${id}`);
         fetchMessages();
       } catch (error) {
         console.error('Error deleting message', error);

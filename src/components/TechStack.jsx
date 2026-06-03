@@ -70,17 +70,34 @@ export default function TechStack() {
         if (res.ok) {
           const skills = await res.json();
           if (Array.isArray(skills) && skills.length > 0) {
-            // Group skills by category
+            // Group skills by category, starting with fallbacks as base
             const grouped = {};
+            
+            // Add fallback skills first
+            fallbackCategories.forEach(cat => {
+              const metaKey = Object.keys(categoryMeta).find(key => categoryMeta[key].title === cat.title) || 'Other';
+              grouped[metaKey] = [...cat.techs];
+            });
+
+            // Add or merge database skills
             skills.forEach(skill => {
               const cat = skill.category || 'Other';
               if (!grouped[cat]) grouped[cat] = [];
-              grouped[cat].push({ name: skill.name, icon: skill.icon || null, role: skill.role || null });
+              
+              // Check if skill already exists in fallback to avoid duplicates
+              const existingIdx = grouped[cat].findIndex(s => s.name.toLowerCase() === skill.name.toLowerCase());
+              const newSkill = { name: skill.name, icon: skill.icon || null, role: skill.role || null };
+              
+              if (existingIdx >= 0) {
+                grouped[cat][existingIdx] = newSkill; // Update existing
+              } else {
+                grouped[cat].push(newSkill); // Add new
+              }
             });
 
             // Convert to array with meta, maintaining predefined order
             const cats = Object.keys(categoryMeta)
-              .filter(key => grouped[key])
+              .filter(key => grouped[key] && grouped[key].length > 0)
               .map(key => ({
                 title: categoryMeta[key].title,
                 color: categoryMeta[key].color,

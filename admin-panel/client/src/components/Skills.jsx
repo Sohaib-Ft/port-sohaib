@@ -18,9 +18,11 @@ export default function Skills() {
     fetchSkills();
   }, []);
 
+  const API_URL = 'https://portfolio-backend-sohaib.fly.dev';
+
   const fetchSkills = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/skills');
+      const res = await axios.get(`${API_URL}/api/skills`);
       setSkills(res.data);
     } catch (error) {
       console.error('Error fetching skills', error);
@@ -48,9 +50,9 @@ export default function Skills() {
 
     try {
       if (currentSkill) {
-        await axios.put(`http://localhost:5000/api/skills/${currentSkill._id}`, data);
+        await axios.put(`${API_URL}/api/skills/${currentSkill._id}`, data);
       } else {
-        await axios.post('http://localhost:5000/api/skills', data);
+        await axios.post(`${API_URL}/api/skills`, data);
       }
       fetchSkills();
       setIsModalOpen(false);
@@ -62,7 +64,7 @@ export default function Skills() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this skill?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/skills/${id}`);
+        await axios.delete(`${API_URL}/api/skills/${id}`);
         fetchSkills();
       } catch (error) {
         console.error('Error deleting skill', error);
