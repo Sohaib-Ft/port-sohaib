@@ -1,3 +1,71 @@
+/* ========================================
+   TOP NAVBAR — always visible, just logo
+   ======================================== */
+.top-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  padding: 16px 0;
+  transition: all 0.3s ease;
+}
+
+.top-navbar__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top-navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.top-navbar__logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.top-navbar__logo-text {
+  color: var(--text-primary);
+}
+
+.top-navbar__theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.top-navbar__theme-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-glass-hover);
+  border-color: var(--border-hover);
+}
+
+/* Legacy .navbar styles kept for reference, unused now */
 .navbar {
   position: fixed;
   top: 0;
@@ -8,20 +76,10 @@
   transition: all var(--transition-base);
 }
 
-.navbar--scrolled {
-  padding: 12px 0;
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-color);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-[data-theme="dark"] .navbar--scrolled {
-  background: rgba(9, 9, 11, 0.85);
-}
-
-[data-theme="light"] .navbar--scrolled {
-  background: rgba(255, 255, 255, 0.85);
+.navbar--hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .navbar__container {
@@ -189,4 +247,165 @@
     display: flex;
     margin-top: 16px;
   }
+}
+
+/* ========================================
+   FLOATING DOCK NAVBAR
+   ======================================== */
+.dock-navbar {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(150%);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.dock-navbar--visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.dock-navbar__container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .dock-navbar__container {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.dock-navbar__item-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.dock-navbar__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #a0a0a0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+[data-theme="light"] .dock-navbar__link {
+  color: #606060;
+}
+
+.dock-navbar__link:hover {
+  color: #fff;
+  transform: scale(1.1);
+}
+
+[data-theme="light"] .dock-navbar__link:hover {
+  color: #000;
+}
+
+.dock-navbar__link--active {
+  background: #fff;
+  color: #000;
+  transform: scale(1.15);
+}
+
+[data-theme="light"] .dock-navbar__link--active {
+  background: #000;
+  color: #fff;
+}
+
+.dock-navbar__link--active:hover {
+  color: #000;
+  transform: scale(1.15);
+}
+
+[data-theme="light"] .dock-navbar__link--active:hover {
+  color: #fff;
+}
+
+.dock-navbar__dot {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #8b5cf6; /* Purple/violet dot matching system theme */
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+}
+
+.dock-navbar__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.dock-navbar__divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 4px;
+}
+
+[data-theme="light"] .dock-navbar__divider {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Tooltip styles */
+.dock-navbar__tooltip {
+  position: absolute;
+  top: -45px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px) scale(0.9);
+  background: rgba(30, 30, 30, 0.9);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .dock-navbar__tooltip {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dock-navbar__item-wrapper:hover .dock-navbar__tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0) scale(1);
 }

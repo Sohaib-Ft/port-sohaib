@@ -291,8 +291,56 @@
   color: var(--text-secondary);
   line-height: 1.8;
   max-width: 520px;
-  margin: 0 auto 40px;
+  margin: 0 auto;
 }
+
+.hero__desc-wrap {
+  margin: 0 auto 40px;
+  max-width: 520px;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero__description--cycling {
+  text-align: center;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.phrase--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.phrase--hidden {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+
+/* Dots indicator */
+.hero__desc-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.hero__desc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  transition: all 0.3s ease;
+}
+
+.hero__desc-dot--active {
+  background: var(--accent-primary);
+  width: 20px;
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+}
+
 
 /* ========================================
    BUTTONS

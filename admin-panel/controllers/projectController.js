@@ -24,6 +24,7 @@ const createProject = async (req, res) => {
       description,
       github,
       tags: tagsArray,
+      isPrivate: req.body.isPrivate === 'true' || req.body.isPrivate === true,
       image: req.file ? `/uploads/${req.file.filename}` : '',
     });
 
@@ -45,6 +46,9 @@ const updateProject = async (req, res) => {
       project.title = title || project.title;
       project.description = description || project.description;
       project.github = github || project.github;
+      if (req.body.isPrivate !== undefined) {
+        project.isPrivate = req.body.isPrivate === 'true' || req.body.isPrivate === true;
+      }
       
       if (tags) {
         project.tags = typeof tags === 'string' ? tags.split(',').map(tag => tag.trim()) : tags;

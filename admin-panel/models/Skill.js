@@ -17,6 +17,10 @@ const skillSchema = new mongoose.Schema({
   role: {
     type: String,
     default: '',
+  },
+  order: {
+    type: Number,
+    default: 0,
   }
 }, { timestamps: true });
 

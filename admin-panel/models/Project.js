@@ -15,11 +15,15 @@ const projectSchema = new mongoose.Schema({
   },
   github: {
     type: String,
-    required: true,
+    default: '',
   },
   tags: {
     type: [String],
     default: [],
+  },
+  isPrivate: {
+    type: Boolean,
+    default: false,
   }
 }, { timestamps: true });
 

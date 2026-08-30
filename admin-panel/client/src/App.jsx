@@ -15,6 +15,10 @@ export default function App() {
   const [projects, setProjects] = useState([]);
   const [messages, setMessages] = useState([]);
 
+  // Drag and Drop state
+  const [draggedSkill, setDraggedSkill] = useState(null);
+  const [dragOverSkill, setDragOverSkill] = useState(null);
+
   // Modal state
   const [modal, setModal] = useState(null); // 'skill' | 'project' | null
   const [editItem, setEditItem] = useState(null);
@@ -22,7 +26,7 @@ export default function App() {
   // Skill form
   const [skillForm, setSkillForm] = useState({ name: '', category: 'Frontend', icon: '', role: '' });
   // Project form
-  const [projectForm, setProjectForm] = useState({ title: '', description: '', github: '', tags: '' });
+  const [projectForm, setProjectForm] = useState({ title: '', description: '', github: '', tags: '', isPrivate: false });
   const [projectImage, setProjectImage] = useState(null);
 
   // Theme toggle
@@ -86,16 +90,52 @@ export default function App() {
     catch (e) { console.error(e); }
   };
 
+  const handleDragStart = (e, skill) => {
+    setDraggedSkill(skill);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnter = (e, skill) => {
+    setDragOverSkill(skill);
+  };
+
+  const handleDragEnd = async () => {
+    if (!draggedSkill || !dragOverSkill || draggedSkill._id === dragOverSkill._id) {
+      setDraggedSkill(null);
+      setDragOverSkill(null);
+      return;
+    }
+
+    const newSkills = [...skills];
+    const draggedIdx = newSkills.findIndex(s => s._id === draggedSkill._id);
+    const overIdx = newSkills.findIndex(s => s._id === dragOverSkill._id);
+    
+    newSkills.splice(draggedIdx, 1);
+    newSkills.splice(overIdx, 0, draggedSkill);
+    
+    setSkills(newSkills);
+    setDraggedSkill(null);
+    setDragOverSkill(null);
+
+    try {
+      const orderedIds = newSkills.map(s => s._id);
+      await axios.put(`${API}/skills/reorder`, { orderedIds });
+    } catch (e) {
+      console.error(e);
+      fetchSkills(); // revert on error
+    }
+  };
+
   // ========================================
   // PROJECT CRUD
   // ========================================
   const openProjectModal = (project = null) => {  
     if (project) {
       setEditItem(project);
-      setProjectForm({ title: project.title, description: project.description, github: project.github, tags: project.tags?.join(', ') || '' });
+      setProjectForm({ title: project.title, description: project.description, github: project.github, tags: project.tags?.join(', ') || '', isPrivate: project.isPrivate || false });
     } else {
       setEditItem(null);
-      setProjectForm({ title: '', description: '', github: '', tags: '' });
+      setProjectForm({ title: '', description: '', github: '', tags: '', isPrivate: false });
     }
     setProjectImage(null);
     setModal('project');
@@ -108,6 +148,7 @@ export default function App() {
     formData.append('description', projectForm.description);
     formData.append('github', projectForm.github);
     formData.append('tags', projectForm.tags);
+    formData.append('isPrivate', projectForm.isPrivate);
     if (projectImage) formData.append('image', projectImage);
 
     try {
@@ -243,7 +284,16 @@ export default function App() {
                     </div>
                     <div className="cards-grid">
                       {catSkills.map(skill => (
-                        <div className="skill-card" key={skill._id}>
+                        <div 
+                          className={`skill-card ${draggedSkill?._id === skill._id ? 'opacity-50' : ''} ${dragOverSkill?._id === skill._id ? 'border-dashed border-2 border-primary' : ''}`} 
+                          key={skill._id}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, skill)}
+                          onDragEnter={(e) => handleDragEnter(e, skill)}
+                          onDragEnd={handleDragEnd}
+                          onDragOver={(e) => e.preventDefault()}
+                          style={{ cursor: 'grab' }}
+                        >
                           <div className="skill-card__actions">
                             <button className="card-btn card-btn--edit" onClick={() => openSkillModal(skill)}>✏️</button>
                             <button className="card-btn card-btn--delete" onClick={() => deleteSkill(skill._id)}>🗑</button>
@@ -478,11 +528,15 @@ export default function App() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">GitHub Link</label>
-                  <input className="form-input" type="url" value={projectForm.github} onChange={e => setProjectForm({...projectForm, github: e.target.value})} required />
+                  <input className="form-input" type="url" value={projectForm.github} onChange={e => setProjectForm({...projectForm, github: e.target.value})} required={!projectForm.isPrivate} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Tags (comma separated)</label>
                   <input className="form-input" type="text" value={projectForm.tags} onChange={e => setProjectForm({...projectForm, tags: e.target.value})} placeholder="React, Node, MongoDB" />
+                </div>
+                <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <input type="checkbox" id="isPrivate" checked={projectForm.isPrivate} onChange={e => setProjectForm({...projectForm, isPrivate: e.target.checked})} />
+                  <label htmlFor="isPrivate" className="form-label" style={{ marginBottom: 0 }}>Private Repository (Hide Source Code Button)</label>
                 </div>
                 <div className="form-group">
                   <label className="form-label">Image {editItem && '(leave blank to keep current)'}</label>

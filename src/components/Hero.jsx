@@ -7,7 +7,6 @@ export default function Hero() {
   useEffect(() => {
     const el = heroRef.current;
     if (el) {
-      // Small delay for dramatic reveal
       setTimeout(() => el.classList.add('hero--visible'), 100);
     }
   }, []);

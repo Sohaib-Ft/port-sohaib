@@ -91,19 +91,21 @@ function ProjectCard({ project, index }) {
             <span className="allprojects__card-tag" key={i}>{tag}</span>
           ))}
         </div>
-        <a
-          href={project.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="allprojects__card-btn"
-        >
-          <GHIcon />
-          Source Code
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="7" y1="17" x2="17" y2="7"/>
-            <polyline points="7 7 17 7 17 17"/>
-          </svg>
-        </a>
+        {!project.isPrivate && (
+          <a
+            href={project.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="allprojects__card-btn"
+          >
+            <GHIcon />
+            Source Code
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"/>
+              <polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </a>
+        )}
       </div>
     </div>
   );
@@ -133,6 +135,7 @@ export default function AllProjects({ onBack }) {
                 ? (p.image.startsWith('/uploads/') ? `${API_URL}${p.image}` : p.image)
                 : '',
               tags: Array.isArray(p.tags) ? p.tags : [],
+              isPrivate: p.isPrivate || false,
               github: p.github || '#',
               color: COLORS[i % COLORS.length],
             }));

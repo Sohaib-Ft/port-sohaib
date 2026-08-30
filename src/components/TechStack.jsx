@@ -63,36 +63,22 @@ export default function TechStack() {
 
   useEffect(() => {
     const fetchSkills = async () => {
-      const API_URL = import.meta.env.VITE_API_URL || 'https://portfolio-backend-sohaib.fly.dev';
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const API_URL = isLocal ? 'http://127.0.0.1:5000' : (import.meta.env.VITE_API_URL || 'https://portfolio-backend-sohaib.fly.dev');
 
       try {
         const res = await fetch(`${API_URL}/api/skills`);
         if (res.ok) {
           const skills = await res.json();
           if (Array.isArray(skills) && skills.length > 0) {
-            // Group skills by category, starting with fallbacks as base
             const grouped = {};
             
-            // Add fallback skills first
-            fallbackCategories.forEach(cat => {
-              const metaKey = Object.keys(categoryMeta).find(key => categoryMeta[key].title === cat.title) || 'Other';
-              grouped[metaKey] = [...cat.techs];
-            });
-
-            // Add or merge database skills
+            // Group database skills by category
             skills.forEach(skill => {
               const cat = skill.category || 'Other';
               if (!grouped[cat]) grouped[cat] = [];
               
-              // Check if skill already exists in fallback to avoid duplicates
-              const existingIdx = grouped[cat].findIndex(s => s.name.toLowerCase() === skill.name.toLowerCase());
-              const newSkill = { name: skill.name, icon: skill.icon || null, role: skill.role || null };
-              
-              if (existingIdx >= 0) {
-                grouped[cat][existingIdx] = newSkill; // Update existing
-              } else {
-                grouped[cat].push(newSkill); // Add new
-              }
+              grouped[cat].push({ name: skill.name, icon: skill.icon || null, role: skill.role || null });
             });
 
             // Convert to array with meta, maintaining predefined order
@@ -105,6 +91,9 @@ export default function TechStack() {
               }));
 
             setCategories(cats);
+          } else {
+            // If API succeeds but is empty, clear the categories (so deleted skills stay deleted)
+            setCategories([]);
           }
         }
       } catch (err) {
